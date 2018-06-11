@@ -9,6 +9,11 @@ from explauto.utils import bounds_min_max
 from explauto.environment.environment import Environment
 from explauto.utils.utils import rand_bounds
 
+import pickle
+from rospkg.rospack import RosPack
+import rospy 
+from os.path import join
+
 import brewer2mpl
 bmap = brewer2mpl.get_map('Dark2', 'qualitative', 6)
 colors = bmap.mpl_colors
@@ -53,9 +58,41 @@ class CogSci2017Environment(Environment):
         
         
         self.vowels = dict(o=self.v_o, y=self.v_y, u=self.v_u, e=self.v_e, i=self.v_i)
+
+        # Retrieve caregiver sounds and trajectories from json
+        self.rospack = RosPack()
+        with open(join(self.rospack.get_path('pobax_playground'), 'config', 'human_sounds.pickle')) as f:
+            self.full_human_motor_traj, self.full_human_sounds_traj  = pickle.load(f)
+        self.human_sounds = self.full_human_sounds_traj.keys()
+        rospy.loginfo('Voice node using the word %s for culbuto name' % self.human_sounds[0])
+
+        def compress_sound_traj(sound):
+            assert(len(sound) == 100)
+            f1s = sound[:50]
+            f3s = sound[50:]
+            return np.append(f1s[np.array([0, 12, 24, 37, 49])],f3s[np.array([0, 12, 24, 37, 49])])
+            
         
-        self.human_sounds = ['oey', 'uye', 'iuo', 'eyu', 'eou', 'yeo']
-        random.shuffle(self.human_sounds)
+        #reduce number of sounds
+        self.human_sounds = ['eyu', 'oey', 'eou', 'oyi']
+        #random.shuffle(self.human_sounds)
+
+
+        print self.human_sounds
+        self.human_sounds_traj = dict()
+        self.human_sounds_traj_std = dict()
+        self.best_vocal_errors = {}
+        self.best_vocal_errors_evolution = []
+        for hs in self.human_sounds:
+            self.best_vocal_errors[hs] = 10.
+            self.human_sounds_traj[hs] = compress_sound_traj(self.full_human_sounds_traj[hs])
+            self.human_sounds_traj_std[hs] = [d - 8.5 for d in self.human_sounds_traj[hs][:5]] + [d - 10.25 for d in self.human_sounds_traj[hs][5:]]    
+        
+
+        '''
+        #self.human_sounds = ['oey', 'uye', 'iuo', 'eyu', 'eou', 'yeo']
+        self.human_sounds = ['eyu','uye','iuo','oey', 'eou', 'yeo']
+        #random.shuffle(self.human_sounds)
         print "human sounds", self.human_sounds
         
         
@@ -77,7 +114,7 @@ class CogSci2017Environment(Environment):
             self.best_vocal_errors[hs] = 10.
             self.human_sounds_traj[hs] = compute_s_sound(hs)
             self.human_sounds_traj_std[hs] = [d - 8.5 for d in self.human_sounds_traj[hs][:5]] + [d - 10.25 for d in self.human_sounds_traj[hs][5:]]    
-    
+        '''
             
         self.sound_tol = 0.4
     
@@ -308,7 +345,7 @@ class CogSci2017Environment(Environment):
             #print "Caregiver says", self.human_sounds[2]
             return self.human_sounds_traj[self.human_sounds[2]]
         elif toy == "random":
-            sound_id = np.random.choice([3, 4, 5])
+            sound_id = np.random.choice([1, 2, 3])
             #print "Caregiver says", self.human_sounds[sound_id]
             return self.human_sounds_traj[self.human_sounds[sound_id]]
         else:
@@ -316,14 +353,28 @@ class CogSci2017Environment(Environment):
         
     def analysis_sound(self, diva_traj):
         #return self.human_sounds[2]
+        best = None
+        is_best_found = False
+        best_best = None
+        best_best_sound_tol = 999
         for hs in self.human_sounds:          
             error = np.linalg.norm(np.array(self.human_sounds_traj[hs]) - np.array([f[0] for f in diva_traj[[0, 12, 24, 37, 49]]] + [f[1] for f in diva_traj[[0, 12, 24, 37, 49]]]))
             if error < self.best_vocal_errors[hs]:
                 self.best_vocal_errors[hs] = error
             if error < self.sound_tol:
-                print "***********Agent says", hs
-                return hs
-        return None
+                if not is_best_found:
+                    best = hs
+                    best_found = True
+                if error < best_best_sound_tol:
+                    best_best = hs
+                    best_best_sound_tol = error
+        if best: 
+            if not best_best == best:
+                print "########### I WAS RIGHT #########, best is "+best+"but best best is "+best_best 
+            print "***********Agent says", best
+            return best
+        else:
+            return None
     
     def caregiver_moves_obj(self, caregiver_pos, current_toy):
         middle = [caregiver_pos[0]/2, caregiver_pos[1]/2]
@@ -592,6 +643,7 @@ class CogSci2017Environment(Environment):
         print "# Arm trials:", self.count_arm
         print "# Vocal trials:", self.count_diva
         print "# Tool actions:", self.count_tool
+        print "# toy sounds:", self.human_sounds[0], self.human_sounds[1], self.human_sounds[2]
         print "# Produced sounds:", self.count_produced_sounds
         print "# Toy1 was reached by tool:", self.count_toy1_by_tool
         print "# Toy2 was reached by tool:", self.count_toy2_by_tool

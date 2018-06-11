@@ -30,13 +30,13 @@ class DivaSynth:
         
     def execute(self, art):
         try:
-            self.aud, self.som, self.vt = self.octave.diva_synth(art, 'audsom')
+            self.aud = self.octave.diva_synth(art, 'audsom')
         except:
             self.reboot()
             print "Warning: Oct2Py crashed, Oct2Py restarted"
-            self.aud, self.som, self.vt = self.octave.diva_synth(art, 'audsom')
+            self.aud = self.octave.diva_synth(art, 'audsom')
         self.add_iter()
-        return self.aud, self.som, self.vt
+        return self.aud,
 
     def sound_wave(self, art):
         wave = self.octave.diva_synth(art, 'sound')
