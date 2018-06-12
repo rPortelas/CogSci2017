@@ -110,7 +110,7 @@ class LearningModule(Agent):
     def update_imitation_goals(self, imitate_sm, time_window=100):
         n = len(imitate_sm)
         if n > 0:
-            goals = [imitate_sm.get_y(idx)[8:] for idx in range(max(0, n - time_window), n)] # [8:] depend on mod6 context_n_dims
+            goals = [imitate_sm.get_y(idx)[4:] for idx in range(max(0, n - time_window), n)] # [4:] depend on mod6 context_n_dims
             #print "imitate", goals
             for goal in goals:
                 self.goal_dict[goal.tostring()] = goal

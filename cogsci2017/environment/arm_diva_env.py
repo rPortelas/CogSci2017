@@ -88,34 +88,6 @@ class CogSci2017Environment(Environment):
             self.human_sounds_traj[hs] = compress_sound_traj(self.full_human_sounds_traj[hs])
             self.human_sounds_traj_std[hs] = [d - 8.5 for d in self.human_sounds_traj[hs][:5]] + [d - 10.25 for d in self.human_sounds_traj[hs][5:]]    
         
-
-        '''
-        #self.human_sounds = ['oey', 'uye', 'iuo', 'eyu', 'eou', 'yeo']
-        self.human_sounds = ['eyu','uye','iuo','oey', 'eou', 'yeo']
-        #random.shuffle(self.human_sounds)
-        print "human sounds", self.human_sounds
-        
-        
-        def compute_s_sound(sound):
-            s1 = self.vowels[sound[0]]
-            s2 = [(self.vowels[sound[0]][0] + self.vowels[sound[1]][0]) / 2., (self.vowels[sound[0]][1] + self.vowels[sound[1]][1]) / 2.]
-            s3 = self.vowels[sound[1]]
-            s4 = [(self.vowels[sound[1]][0] + self.vowels[sound[2]][0]) / 2., (self.vowels[sound[1]][1] + self.vowels[sound[2]][1]) / 2.]
-            s5 = self.vowels[sound[2]]
-            rdm = 0.0 * (2.*np.random.random((1,10))[0] - 1.)
-            return list(rdm + np.array([f[0] for f in [s1, s2, s3, s4, s5]] + [f[1] for f in [s1, s2, s3, s4, s5]]))
-        
-        
-        self.human_sounds_traj = dict()
-        self.human_sounds_traj_std = dict()
-        self.best_vocal_errors = {}
-        self.best_vocal_errors_evolution = []
-        for hs in self.human_sounds:
-            self.best_vocal_errors[hs] = 10.
-            self.human_sounds_traj[hs] = compute_s_sound(hs)
-            self.human_sounds_traj_std[hs] = [d - 8.5 for d in self.human_sounds_traj[hs][:5]] + [d - 10.25 for d in self.human_sounds_traj[hs][5:]]    
-        '''
-            
         self.sound_tol = 0.4
     
 
@@ -164,14 +136,14 @@ class CogSci2017Environment(Environment):
         Environment.__init__(self, 
                              m_mins= [-1.] * (21+28),
                              m_maxs= [1.] * (21+28),
-                             s_mins= [-1.] * 80,
-                             s_maxs= [1.] * 80)
+                             s_mins= [-1.] * 56,
+                             s_maxs= [1.] * 56)
         
         
         self.current_tool = [-0.5, 0., 0.5, 0.]
         self.current_toy1 = [0.5, 0.5, 0.]
-        self.current_toy2 = [0.7, 0.7, 0.]
-        self.current_toy3 = [0.9, 0.9, 0.]
+        #self.current_toy2 = [0.7, 0.7, 0.]
+        #self.current_toy3 = [0.9, 0.9, 0.]
         self.current_caregiver = [0., 1.7]
         self.reset()
         self.compute_tool()
@@ -187,11 +159,11 @@ class CogSci2017Environment(Environment):
         self.count_arm = 0
         self.count_tool = 0
         self.count_toy1_by_tool = 0
-        self.count_toy2_by_tool = 0
-        self.count_toy3_by_tool = 0
+        #self.count_toy2_by_tool = 0
+        #self.count_toy3_by_tool = 0
         self.count_toy1_by_hand = 0
-        self.count_toy2_by_hand = 0
-        self.count_toy3_by_hand = 0
+        #self.count_toy2_by_hand = 0
+        #self.count_toy3_by_hand = 0
         self.count_parent_give_label = 0
         self.count_parent_give_object = 0
         self.count_produced_sounds = {}
@@ -214,11 +186,11 @@ class CogSci2017Environment(Environment):
                     count_arm=self.count_arm,
                     count_tool=self.count_tool,
                     count_toy1_by_tool=self.count_toy1_by_tool,
-                    count_toy2_by_tool=self.count_toy2_by_tool,
-                    count_toy3_by_tool=self.count_toy3_by_tool,
+                    #count_toy2_by_tool=self.count_toy2_by_tool,
+                    #count_toy3_by_tool=self.count_toy3_by_tool,
                     count_toy1_by_hand=self.count_toy1_by_hand,
-                    count_toy2_by_hand=self.count_toy2_by_hand,
-                    count_toy3_by_hand=self.count_toy3_by_hand,
+                    #count_toy2_by_hand=self.count_toy2_by_hand,
+                    #count_toy3_by_hand=self.count_toy3_by_hand,
                     count_parent_give_label=self.count_parent_give_label,
                     count_parent_give_object=self.count_parent_give_object,
                     count_produced_sounds=self.count_produced_sounds,
@@ -231,24 +203,24 @@ class CogSci2017Environment(Environment):
         
         self.current_tool[3] = 0.
         self.current_toy1[2] = 0.
-        self.current_toy2[2] = 0.
-        self.current_toy3[2] = 0.
+        #self.current_toy2[2] = 0.
+        #self.current_toy3[2] = 0.
         self.reset_caregiver()
         self.current_context = self.get_current_context()  
         
         self.hand = []
         self.tool = []
         self.toy1 = []
-        self.toy2 = []
-        self.toy3 = []
+        #self.toy2 = []
+        #self.toy3 = []
         self.caregiver = []
         
         
     def purge_logs(self):
         self.logs_tool = []
         self.logs_toy1 = []
-        self.logs_toy2 = []
-        self.logs_toy3 = []
+        #self.logs_toy2 = []
+        #self.logs_toy3 = []
         self.logs_caregiver = []
             
     def reset_tool(self):
@@ -263,13 +235,13 @@ class CogSci2017Environment(Environment):
         
     def reset_toys(self, region=0):
         self.current_toy1[:2] = self.reset_rand2d(region=region)
-        self.current_toy2[:2] = self.reset_rand2d(region=region)
-        self.current_toy3[:2] = self.reset_rand2d(region=region)
+        #self.current_toy2[:2] = self.reset_rand2d(region=region)
+        #self.current_toy3[:2] = self.reset_rand2d(region=region)
         
     def set_toys(self, pos1, pos2, pos3):
         self.current_toy1[:2] = pos1
-        self.current_toy2[:2] = pos2
-        self.current_toy3[:2] = pos3
+        #self.current_toy2[:2] = pos2
+        #self.current_toy3[:2] = pos3
         
     def reset_caregiver(self):
         self.current_caregiver = self.reset_rand2d()
@@ -303,7 +275,7 @@ class CogSci2017Environment(Environment):
         
         
     def get_current_context(self):
-        return [d / 2. for d in self.current_tool[:2] + self.current_toy1[:2] + self.current_toy2[:2] + self.current_toy3[:2] + self.current_caregiver]
+        return [d / 2. for d in self.current_tool[:2] + self.current_toy1[:2] + self.current_caregiver]
     
     def compute_tool(self):
         a = np.pi * self.current_tool[2]
@@ -328,22 +300,16 @@ class CogSci2017Environment(Environment):
         return m
     
     def is_hand_free(self):
-        return self.current_tool[3] == 0 and (not self.current_toy1[2] == 1) and (not self.current_toy2[2] == 1) and (not self.current_toy3[2] == 1)
+        return self.current_tool[3] == 0 and (not self.current_toy1[2] == 1)
     
     def is_tool_free(self):
-        return (not self.current_toy1[2] == 2) and (not self.current_toy2[2] == 2) and (not self.current_toy3[2] == 2) 
+        return (not self.current_toy1[2] == 2)
 
     def give_label(self, toy):
         
         if toy == "toy1":
             #print "Caregiver says", self.human_sounds[0] 
             return self.human_sounds_traj[self.human_sounds[0]]
-        elif toy == "toy2":
-            #print "Caregiver says", self.human_sounds[1]
-            return self.human_sounds_traj[self.human_sounds[1]]
-        elif toy == "toy3":
-            #print "Caregiver says", self.human_sounds[2]
-            return self.human_sounds_traj[self.human_sounds[2]]
         elif toy == "random":
             sound_id = np.random.choice([1, 2, 3])
             #print "Caregiver says", self.human_sounds[sound_id]
@@ -448,59 +414,20 @@ class CogSci2017Environment(Environment):
                     self.current_toy1[2] = 2
                 self.logs_toy1.append([self.current_toy1])
                 
-                # Toy 2
-                if self.current_toy2[2] == 1 or (self.is_hand_free() and ((arm_x - self.current_toy2[0]) ** 2 + (arm_y - self.current_toy2[1]) ** 2 < self.object_tol_hand_sq)):
-                    self.current_toy2[0] = arm_x
-                    self.current_toy2[1] = arm_y
-                    self.current_toy2[2] = 1
-                if self.current_toy2[2] == 2 or ((not self.current_toy2[2] == 1) and self.is_tool_free() and ((self.tool_end_pos[0] - self.current_toy2[0]) ** 2 + (self.tool_end_pos[1] - self.current_toy2[1]) ** 2 < self.object_tol_tool_sq)):
-                    self.current_toy2[0] = self.tool_end_pos[0]
-                    self.current_toy2[1] = self.tool_end_pos[1]
-                    self.current_toy2[2] = 2
-                self.logs_toy2.append([self.current_toy2])
-                
-                # Toy 3
-                if self.current_toy3[2] == 1 or (self.is_hand_free() and ((arm_x - self.current_toy3[0]) ** 2 + (arm_y - self.current_toy3[1]) ** 2 < self.object_tol_hand_sq)):
-                    self.current_toy3[0] = arm_x
-                    self.current_toy3[1] = arm_y
-                    self.current_toy3[2] = 1
-                if self.current_toy3[2] == 2 or ((not self.current_toy3[2] == 1) and self.is_tool_free() and ((self.tool_end_pos[0] - self.current_toy3[0]) ** 2 + (self.tool_end_pos[1] - self.current_toy3[1]) ** 2 < self.object_tol_tool_sq)):
-                    self.current_toy3[0] = self.tool_end_pos[0]
-                    self.current_toy3[1] = self.tool_end_pos[1]
-                    self.current_toy3[2] = 2
-                self.logs_toy3.append([self.current_toy3])
-                
-                self.logs_caregiver.append([self.current_caregiver])
-                
+                self.logs_caregiver.append([self.current_caregiver])     
         
             else:
                 # parent gives object if label is produced
                 if self.produced_sound == self.human_sounds[0]:
-                    self.current_toy1 =  self.caregiver_moves_obj(self.current_caregiver, self.current_toy1)
-                elif self.produced_sound == self.human_sounds[1]:
-                    self.current_toy2 =  self.caregiver_moves_obj(self.current_caregiver, self.current_toy2)
-                elif self.produced_sound == self.human_sounds[2]:
-                    self.current_toy3 =  self.caregiver_moves_obj(self.current_caregiver, self.current_toy3)
-                    
+                    self.current_toy1 =  self.caregiver_moves_obj(self.current_caregiver, self.current_toy1)        
                 
                 self.logs_toy1.append([self.current_toy1])
-                self.logs_toy2.append([self.current_toy2])
-                self.logs_toy3.append([self.current_toy3])
                 self.logs_caregiver.append([self.current_caregiver])
-        
-#             if i in [0, 10, 20, 30, 40, 49]:
-#                 self.hand = self.hand + [arm_x, arm_y]
-#                 self.tool = self.tool + self.current_tool[:2]
-#                 self.toy1 = self.toy1 + self.current_toy1[:2]
-#                 self.toy2 = self.toy2 + self.current_toy2[:2]
-#                 self.toy3 = self.toy3 + self.current_toy3[:2]
                 
             if i in [0, 12, 24, 37, 49]:
                 self.hand = self.hand + [arm_x, arm_y]
                 self.tool = self.tool + self.current_tool[:2]
                 self.toy1 = self.toy1 + self.current_toy1[:2]
-                self.toy2 = self.toy2 + self.current_toy2[:2]
-                self.toy3 = self.toy3 + self.current_toy3[:2]
                 self.caregiver = self.caregiver + self.current_caregiver
         
             if self.arm.gui:
@@ -512,10 +439,6 @@ class CogSci2017Environment(Environment):
             # parent gives label if object is touched by hand 
             if self.current_toy1[2] == 1:
                 label = self.give_label("toy1")
-            elif self.current_toy2[2] == 1:
-                label = self.give_label("toy2")
-            elif self.current_toy3[2] == 1:
-                label = self.give_label("toy3")
             else:
                 label = self.give_label("random")
             self.sound = label
@@ -529,8 +452,6 @@ class CogSci2017Environment(Environment):
         self.hand = self.hand[0::2] + self.hand[1::2]
         self.tool = self.tool[0::2] + self.tool[1::2]
         self.toy1 = self.toy1[0::2] + self.toy1[1::2]
-        self.toy2 = self.toy2[0::2] + self.toy2[1::2]
-        self.toy3 = self.toy3[0::2] + self.toy3[1::2]
         self.caregiver = self.caregiver[0::2] + self.caregiver[1::2]
         #self.sound = self.sound[0::2] + self.sound[1::2]
         
@@ -546,15 +467,8 @@ class CogSci2017Environment(Environment):
             self.count_toy1_by_hand += 1
         elif self.current_tool[3] and self.current_toy1[2] == 2:
             self.count_toy1_by_tool += 1
-        if self.current_toy2[2] == 1:
-            self.count_toy2_by_hand += 1
-        elif self.current_tool[3] and self.current_toy2[2] == 2:
-            self.count_toy2_by_tool += 1
-        if self.current_toy3[2] == 1:
-            self.count_toy3_by_hand += 1
-        elif self.current_tool[3] and self.current_toy3[2] == 2:
-            self.count_toy3_by_tool += 1
-        self.count_parent_give_label = self.count_toy1_by_hand + self.count_toy2_by_hand + self.count_toy3_by_hand
+
+        self.count_parent_give_label = self.count_toy1_by_hand
 
         if cmd == "arm":
             self.time_arm += time.time() - t
@@ -585,30 +499,10 @@ class CogSci2017Environment(Environment):
         hand = [d/2 for d in self.hand]
         tool = [d/2 for d in self.tool]
         toy1 = [d/2 for d in self.toy1]
-        toy2 = [d/2 for d in self.toy2]
-        toy3 = [d/2 for d in self.toy3]
         sound = [d - 8.5 for d in self.sound[:5]] + [d - 10.25 for d in self.sound[5:]]
         caregiver = [d/2 for d in self.caregiver]
         
-        # MAP to Delta
-#         hand = [hand[1] - hand[0], hand[2] - hand[1], hand[3] - hand[2], hand[4] - hand[3], hand[5] - hand[4],
-#                 hand[7] - hand[6], hand[8] - hand[7], hand[9] - hand[8], hand[10] - hand[9], hand[11] - hand[10]]
-#         
-#         tool = [tool[1] - tool[0], tool[2] - tool[1], tool[3] - tool[2], tool[4] - tool[3], tool[5] - tool[4],
-#                 tool[7] - tool[6], tool[8] - tool[7], tool[9] - tool[8], tool[10] - tool[9], tool[11] - tool[10]]
-#         
-#         toy1 = [toy1[1] - toy1[0], toy1[2] - toy1[1], toy1[3] - toy1[2], toy1[4] - toy1[3], toy1[5] - toy1[4],
-#                 toy1[7] - toy1[6], toy1[8] - toy1[7], toy1[9] - toy1[8], toy1[10] - toy1[9], toy1[11] - toy1[10]]
-#         
-#         toy2 = [toy2[1] - toy2[0], toy2[2] - toy2[1], toy2[3] - toy2[2], toy2[4] - toy2[3], toy2[5] - toy2[4],
-#                 toy2[7] - toy2[6], toy2[8] - toy2[7], toy2[9] - toy2[8], toy2[10] - toy2[9], toy2[11] - toy2[10]]
-#         
-#         toy3 = [toy3[1] - toy3[0], toy3[2] - toy3[1], toy3[3] - toy3[2], toy3[4] - toy3[3], toy3[5] - toy3[4],
-#                 toy3[7] - toy3[6], toy3[8] - toy3[7], toy3[9] - toy3[8], toy3[10] - toy3[9], toy3[11] - toy3[10]]
-                
-        
-        
-        s = context + hand + tool + toy1 + toy2 + toy3 + sound + caregiver
+        s = context + hand + tool + toy1 + sound + caregiver
         #print "s_sound", sound
         return bounds_min_max(s, self.conf.s_mins, self.conf.s_maxs)
     
@@ -646,11 +540,7 @@ class CogSci2017Environment(Environment):
         print "# toy sounds:", self.human_sounds[0], self.human_sounds[1], self.human_sounds[2]
         print "# Produced sounds:", self.count_produced_sounds
         print "# Toy1 was reached by tool:", self.count_toy1_by_tool
-        print "# Toy2 was reached by tool:", self.count_toy2_by_tool
-        print "# Toy3 was reached by tool:", self.count_toy3_by_tool
         print "# Toy1 was reached by hand:", self.count_toy1_by_hand
-        print "# Toy2 was reached by hand:", self.count_toy2_by_hand
-        print "# Toy3 was reached by hand:", self.count_toy3_by_hand
         print "# Parent gave vocal labels:", self.count_parent_give_label
         print "# Parent gave object:", self.count_parent_give_object
         print
@@ -676,16 +566,6 @@ class CogSci2017Environment(Environment):
         pos = self.logs_toy1[i][0]
         rectangle = plt.Rectangle((pos[0] - 0.1, pos[1] - 0.1), 0.2, 0.2, color = colors[3], **kwargs_plot)
         ax.add_patch(rectangle) 
-    
-    def plot_toy2_step(self, ax, i, **kwargs_plot):
-        pos = self.logs_toy2[i][0]
-        rectangle = plt.Rectangle((pos[0] - 0.1, pos[1] - 0.1), 0.2, 0.2, color = colors[4], **kwargs_plot)
-        ax.add_patch(rectangle) 
-    
-    def plot_toy3_step(self, ax, i, **kwargs_plot):
-        pos = self.logs_toy3[i][0]
-        rectangle = plt.Rectangle((pos[0] - 0.1, pos[1] - 0.1), 0.2, 0.2, color = colors[5], **kwargs_plot)
-        ax.add_patch(rectangle) 
         
     def plot_caregiver_step(self, ax, i, **kwargs_plot):
         pos = self.logs_caregiver[i][0]
@@ -702,8 +582,6 @@ class CogSci2017Environment(Environment):
         self.arm.plot_step(ax, i, **kwargs_plot)
         self.plot_tool_step(ax, i, **kwargs_plot)
         self.plot_toy1_step(ax, i, **kwargs_plot)
-        self.plot_toy2_step(ax, i, **kwargs_plot)
-        self.plot_toy3_step(ax, i, **kwargs_plot)
         self.plot_caregiver_step(ax, i, **kwargs_plot)
         #print "t3", time.time() - t0
         

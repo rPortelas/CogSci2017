@@ -104,10 +104,6 @@ def run(log_dir, config_name, trial):
     print 
     print "# Social tool use to move toy 1:", count_social_tool_1
     print "# Social tool use to move toy 1, unmatched:", count_social_tool_1_unmatched
-    print "# Social tool use to move toy 2:", count_social_tool_2
-    print "# Social tool use to move toy 2, unmatched:", count_social_tool_2_unmatched
-    print "# Social tool use to move toy 3:", count_social_tool_3
-    print "# Social tool use to move toy 3, unmatched:", count_social_tool_3_unmatched
     print
     
     print "Time for", iterations, "iterations:", time.time() - t0, "sec"
@@ -115,11 +111,7 @@ def run(log_dir, config_name, trial):
     
     social_tool_use = dict(
                            count_social_tool_1=count_social_tool_1,
-                           count_social_tool_1_unmatched=count_social_tool_1_unmatched,
-                           count_social_tool_2=count_social_tool_2,
-                           count_social_tool_2_unmatched=count_social_tool_2_unmatched,
-                           count_social_tool_3=count_social_tool_3,
-                           count_social_tool_3_unmatched=count_social_tool_3_unmatched)
+                           count_social_tool_1_unmatched=count_social_tool_1_unmatched)
     
     
     
@@ -141,16 +133,6 @@ def run(log_dir, config_name, trial):
                            [environment.current_toy1[1] * (1. - t) / 2. for t in [0., 0.3, 0.5, 0.8, 1.]]
                     arm_mid = "mod3"
                     diva_mid = "mod10"
-                elif toy == "toy2":
-                    goal = [environment.current_toy2[0] * (1. - t) / 2. for t in [0., 0.3, 0.5, 0.8, 1.]] + \
-                           [environment.current_toy2[1] * (1. - t) / 2. for t in [0., 0.3, 0.5, 0.8, 1.]]
-                    arm_mid = "mod4"
-                    diva_mid = "mod11"
-                elif toy == "toy3":
-                    goal = [environment.current_toy3[0] * (1. - t) / 2. for t in [0., 0.3, 0.5, 0.8, 1.]] + \
-                           [environment.current_toy3[1] * (1. - t) / 2. for t in [0., 0.3, 0.5, 0.8, 1.]]
-                    arm_mid = "mod5"
-                    diva_mid = "mod12"
                     
                 context = list(agent.modules[arm_mid].get_c(environment.get_current_context()))
                 dists, _ = agent.modules[arm_mid].sm.model.imodel.fmodel.dataset.nn_y(context+goal)
